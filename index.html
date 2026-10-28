@@ -141,7 +141,7 @@ const TERR_TILES=3;            /* 지형 타일 = 화면 3장. 같은 그림이 
 /* 도트 보존 — 캔버스 안에서도, 화면으로 확대될 때도 보간하지 않는다 */
 ctx.imageSmoothingEnabled=false;
 const PI=Math.PI, TAU=PI*2;
-const VER='v56';
+const VER='v57';
 /* ===== 난이도 =====
    적 체력은 두 모드가 같다. 잡는 손맛은 그대로 두고 '위험'만 조절한다. */
 const DIFFS=[
@@ -3223,6 +3223,10 @@ const BOSSTINT={
   proto     :{r:150,g:118,b:214,s:.55,id:'pr'}    /* 보라 */
 };
 let _tint=null, _flashPass=0;
+/* 실루엣 그림자 패스 — 지금은 쓰지 않는다.
+   기체를 한 번 더 그려 검게 찍는 방식은 ctx.filter 가 필요한데,
+   매 프레임 쓰기엔 너무 느려 화면이 멈춘다 */
+let _shadowPass=0;
 function _tintCol(hex,t){
   if(!t||typeof hex!=='string'||hex[0]!=='#'||hex.length!==7) return hex;
   const n=parseInt(hex.slice(1),16);
@@ -3562,8 +3566,9 @@ const MIDBOX={gyro:[54,40],drone:[56,38],crawler:[46,44],miner:[44,46],proto:[58
 const KINGNAME='공중전함 레비아탄';
 const BOSSBASE={overlord:1580,ship:980,fortress:1150,zeppelin:1220,armortrain:1130,seaplane:900};
 function bsh(on){
-  if(on&&!LOWFX){ ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=5;
-          ctx.shadowOffsetX=3; ctx.shadowOffsetY=5; }
+  if(_shadowPass) on=false;
+  if(on&&!LOWFX){ ctx.shadowColor='rgba(0,0,0,.58)'; ctx.shadowBlur=6;
+          ctx.shadowOffsetX=4; ctx.shadowOffsetY=6; }
   else  { ctx.shadowColor='rgba(0,0,0,0)'; ctx.shadowBlur=0;
           ctx.shadowOffsetX=0; ctx.shadowOffsetY=0; }
 }
@@ -3661,7 +3666,7 @@ function drawBossBody(){
   ctx.save(); ctx.translate(b.x,b.y);
 
   /* 저체력 붉은 기운 */
-  if(!_flashPass&&b.hp<b.max*.5){
+  if(!_flashPass&&!_shadowPass&&b.hp<b.max*.5){
     const bb=bossBox(), pu=.5+.5*Math.sin(time*.20);
     ctx.save();
     ctx.globalAlpha=.16+.14*pu;                 /* 외곽 윤곽만 붉게 */
@@ -3672,11 +3677,26 @@ function drawBossBody(){
     ctx.beginPath(); ctx.ellipse(0,0,bb[0]*.9,bb[1]*.92,0,0,TAU); ctx.fill();
     ctx.restore();
   }
-  /* 지면 그림자 — 짧은 축 기준의 납작한 타원, 기체보다 작게 */
-  if(!_flashPass){
-    const [bw,bh]=bossBox(), sr=Math.min(bw,bh)*.44;
-    ctx.save(); ctx.translate(6,10); ctx.globalAlpha=.13; ctx.fillStyle='#000';
-    ctx.beginPath(); ctx.ellipse(0,0,sr*1.15,sr*.70,0,0,TAU); ctx.fill(); ctx.restore();
+  /* 지면 그림자 — 기체 실루엣의 비율을 따른다.
+     예전에는 짧은 축만 기준으로 삼아, 가로로 긴 보스는 그림자가 사라졌다.
+     가장자리를 흐리게 떨어뜨려 땅에 눌린 것처럼 보이게 한다 */
+  if(!_flashPass&&!_shadowPass){
+    const [bw,bh]=bossBox();
+    /* 그림자가 기체보다 작고 덜 밀려나면 기체에 완전히 가려 보이지 않는다.
+       같은 크기로 두고 아래 오른쪽으로 충분히 밀어 초승달처럼 드러나게 한다 */
+    /* 그림자가 기체보다 작거나 덜 밀려나면 기체에 완전히 가려 보이지 않는다.
+       같은 크기로 두고 아래 오른쪽으로 밀어 초승달처럼 드러낸다.
+       가장자리까지 흐려지는 그라데이션은 정작 보이는 부분이 거의 투명해져
+       아무것도 안 보인다 — 고른 농도의 타원 두 겹으로 간다 */
+    const ox=clamp(bw*.32,10,42), oy=clamp(bh*.38,12,48);
+    ctx.save(); ctx.translate(ox,oy);
+    ctx.fillStyle='rgba(0,0,0,.17)';                 /* 바깥 — 가장자리를 풀어준다 */
+    ctx.beginPath(); ctx.ellipse(0,0,bw*1.08,bh*1.04,0,0,TAU); ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.30)';                 /* 본 그림자 */
+    ctx.beginPath(); ctx.ellipse(0,0,bw*.96,bh*.92,0,0,TAU); ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.14)';                 /* 기체 바로 아래 — 접지감 */
+    ctx.beginPath(); ctx.ellipse(-ox*.55,-oy*.55,bw*.78,bh*.74,0,0,TAU); ctx.fill();
+    ctx.restore();
   }
 
   ctx.scale(b.scale,b.scale);
