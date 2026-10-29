@@ -149,7 +149,7 @@ const TERR_TILES=3;            /* 지형 타일 = 화면 3장. 같은 그림이 
 /* 도트 보존 — 캔버스 안에서도, 화면으로 확대될 때도 보간하지 않는다 */
 ctx.imageSmoothingEnabled=false;
 const PI=Math.PI, TAU=PI*2;
-const VER='v60';
+const VER='v61';
 /* ===== 난이도 =====
    적 체력은 두 모드가 같다. 잡는 손맛은 그대로 두고 '위험'만 조절한다. */
 const DIFFS=[
@@ -5295,13 +5295,6 @@ function drawTitleLogo(){
   ctx.textAlign='right'; ctx.font='bold 10px ui-monospace,monospace'; ctx.fillStyle='#93a68f';
   ctx.fillText('기체 10단계 · 보스 8종 · 지형 10종',W-10,20);
   ctx.fillText('© IRON WINGS  '+VER,W-10,34);
-  /* 깜빡이는 문구 */
-  if(Math.floor(time/26)%2===0){
-    ctx.textAlign='center'; ctx.font='bold 15px ui-monospace,monospace';
-    ctx.lineWidth=4; ctx.lineJoin='round'; ctx.strokeStyle='#0d1218';
-    ctx.strokeText('P R E S S   S T A R T',W/2,H-146);
-    ctx.fillStyle='#f0e2ab'; ctx.fillText('P R E S S   S T A R T',W/2,H-146);
-  }
 }
 
 let last=performance.now(), lastTick=performance.now(), looping=false, loopGen=0;
