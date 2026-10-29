@@ -1,7 +1,7 @@
 {
   "name": "IRON WINGS 1945",
   "short_name": "IRON WINGS",
-  "description": "강철의 날개 — 레트로 종스크롤 비행 슈팅",
+  "description": "Wings of Steel — a retro vertical shoot-'em-up. 10 planes, 8 bosses, 10 zones.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "fullscreen",
@@ -12,7 +12,7 @@
   "orientation": "portrait",
   "background_color": "#080d14",
   "theme_color": "#080d14",
-  "lang": "ko",
+  "lang": "en",
   "icons": [
     {
       "src": "icon-192.png",
@@ -44,21 +44,21 @@
       "sizes": "540x960",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "섬 상공 교전"
+      "label": "Dogfight over the islands"
     },
     {
       "src": "screenshots/shot2.jpg",
       "sizes": "540x960",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "거대 보스전"
+      "label": "Giant boss battle"
     },
     {
       "src": "screenshots/shot3.jpg",
       "sizes": "540x960",
       "type": "image/jpeg",
       "form_factor": "narrow",
-      "label": "강화 변신"
+      "label": "Transformed fighter"
     }
   ]
 }
