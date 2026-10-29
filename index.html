@@ -97,8 +97,8 @@
       <button class="dbtn" data-d="hard"><b>어려움</b><span>어른용</span></button>
     </div>
     <button class="btn ghost tiny" id="bUpd">업데이트 확인</button>
-    <p class="keys">화면을 끌어 조종 · 총은 자동 · 오른쪽 아래는 폭탄<br>
-       P 파워 · V S L C 무기 · B 폭탄 · ★ ◎ 점수<br>✚ 수리 · ✈ 호위기 · ♥ 예비기</p>
+    <p class="keys">화면을 끌어 조종 · 사격은 자동<br>
+       두 번 톡톡 치면 <b>폭탄</b></p>
   </div>
 
   <div class="sheet" id="shPause">
@@ -141,7 +141,7 @@ const TERR_TILES=3;            /* 지형 타일 = 화면 3장. 같은 그림이 
 /* 도트 보존 — 캔버스 안에서도, 화면으로 확대될 때도 보간하지 않는다 */
 ctx.imageSmoothingEnabled=false;
 const PI=Math.PI, TAU=PI*2;
-const VER='v58';
+const VER='v59';
 /* ===== 난이도 =====
    적 체력은 두 모드가 같다. 잡는 손맛은 그대로 두고 '위험'만 조절한다. */
 const DIFFS=[
@@ -5245,10 +5245,15 @@ function goldText(txt,x,y,size,h1,h2,h3){
   ctx.fillStyle=lg; ctx.fillText(txt,x,y);
 }
 function drawTitleLogo(){
-  ctx.fillStyle='rgba(6,10,16,.34)'; ctx.fillRect(0,0,W,H);
+  /* 예전에는 화면 전체에 검은 막을 덮었다. 로고는 읽혔지만 게임이 우중충해 보였다.
+     위아래 끝에만, 글씨가 읽힐 만큼만 깐다 */
   const gtop=ctx.createLinearGradient(0,0,0,250);
-  gtop.addColorStop(0,'rgba(6,10,16,.72)'); gtop.addColorStop(1,'rgba(6,10,16,0)');
+  gtop.addColorStop(0,'rgba(6,10,16,.68)'); gtop.addColorStop(.72,'rgba(6,10,16,.26)');
+  gtop.addColorStop(1,'rgba(6,10,16,0)');
   ctx.fillStyle=gtop; ctx.fillRect(0,0,W,250);
+  const gbot=ctx.createLinearGradient(0,H-150,0,H);
+  gbot.addColorStop(0,'rgba(6,10,16,0)'); gbot.addColorStop(1,'rgba(6,10,16,.42)');
+  ctx.fillStyle=gbot; ctx.fillRect(0,H-150,W,150);
   const bob=Math.sin(time*.035)*2.5;
   /* 리본 */
   ctx.fillStyle='rgba(10,16,24,.6)'; ctx.fillRect(0,96+bob,W,116);
